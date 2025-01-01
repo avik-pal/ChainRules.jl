@@ -1,5 +1,10 @@
+mutable struct MDemo
+    x::Float64
+end
+
 @testset "base.jl" begin
     @testset "zero/one" begin
+        @test last(rrule(zero, 0.1)) === last(rrule(one, 0.2f0))
         for f in [zero, one]
             for x in [1.0, 1.0im, [10.0+im 11.0-im; 12.0+2im 13.0-3im]]
                 test_frule(f, x)
@@ -17,6 +22,11 @@
                 test_rrule(copysign, y, x)
             end
         end
+    end
+
+    @testset "setfield!" begin
+        test_frule(setfield!, MDemo(3.5) ⊢ MutableTangent{MDemo}(; x=2.0), :x, 5.0)
+        test_frule(setfield!, MDemo(3.5) ⊢ MutableTangent{MDemo}(; x=2.0), 1, 5.0)
     end
     
     @testset "Trig" begin
@@ -157,10 +167,9 @@
         test_scalar(one, x)
         test_scalar(zero, x)
     end
-
     @testset "muladd(x::$T, y::$T, z::$T)" for T in (Float64, ComplexF64)
-        test_frule(muladd, 10randn(), randn(), randn())
-        test_rrule(muladd, 10randn(), randn(), randn())
+        test_frule(muladd, 10randn(T), randn(T), randn(T))
+        test_rrule(muladd, 10randn(T), randn(T), randn(T))
     end
 
     @testset "muladd ZeroTangent" begin
@@ -248,5 +257,10 @@
             # True when https://github.com/JuliaLang/julia/issues/42216 has been fixed
             test_rrule(map, Multiplier(4.5), (6.7, 8.9), (0.1, 0.2, 0.3), check_inferred=false)
         end
+    end
+
+    @testset "merge NamedTuple" begin
+        test_rrule(merge, (; a=1.0), (; b=2.0))
+        test_rrule(merge, (; a=1.0), (; a=2.0))
     end
 end

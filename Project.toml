@@ -1,6 +1,6 @@
 name = "ChainRules"
 uuid = "082447d4-558c-5d27-93f4-14fc19e9eca2"
-version = "1.60.0"
+version = "1.72.2"
 
 [deps]
 Adapt = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
@@ -20,12 +20,12 @@ SuiteSparse = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
 
 [compat]
 Adapt = "3.4.0, 4"
-ChainRulesCore = "1.15.3"
+ChainRulesCore = "1.25"
 ChainRulesTestUtils = "1.5"
 Compat = "3.46, 4.2"
 Distributed = "1"
 FiniteDifferences = "0.12.20"
-GPUArraysCore = "0.1.0"
+GPUArraysCore = "0.1.0, 0.2"
 IrrationalConstants = "0.1.1, 0.2"
 JLArrays = "0.1"
 JuliaInterpreter = "0.8,0.9"
@@ -36,7 +36,7 @@ SparseArrays = "1"
 SparseInverseSubset = "0.1"
 StaticArrays = "1.2"
 Statistics = "1"
-StructArrays = "0.6.11"
+StructArrays = "0.6.11, 0.7"
 SuiteSparse = "1"
 julia = "1.6"
 

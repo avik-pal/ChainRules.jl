@@ -11,7 +11,7 @@ function frule((_, _), ::typeof(zero), x)
 end
 
 function rrule(::typeof(zero), x)
-    zero_pullback(_) = (NoTangent(), ZeroTangent())
+    zero_pullback = Returns((NoTangent(), ZeroTangent()))
     return (zero(x), zero_pullback)
 end
 
@@ -22,8 +22,16 @@ function frule((_, _), ::typeof(one), x)
 end
 
 function rrule(::typeof(one), x)
-    one_pullback(_) = (NoTangent(), ZeroTangent())
+    one_pullback = Returns((NoTangent(), ZeroTangent()))
     return (one(x), one_pullback)
+end
+
+
+function ChainRulesCore.frule((_, ȯbj, _, ẋ), ::typeof(setfield!), obj, field, x)
+    ȯbj::MutableTangent
+    y = setfield!(obj, field, x)
+    ẏ = setproperty!(ȯbj, field, ẋ)
+    return y, ẏ
 end
 
 # `adjoint`
@@ -282,4 +290,27 @@ function rrule(config::RuleConfig{>:HasReverseMode}, ::typeof(task_local_storage
         return (NoTangent(), dbody, NoTangent(), NoTangent())
     end
     return y, task_local_storage_pullback
+end
+
+####
+#### merge
+####
+# need to work around inability to return closures from generated functions
+struct MergePullback{T1,T2} end
+(this::MergePullback)(dy::AbstractThunk) = this(unthunk(dy))
+(::MergePullback)(x::AbstractZero) = (NoTangent(), x, x)
+@generated function (::MergePullback{T1,T2})(
+    dy::Tangent
+) where {F1,T1<:NamedTuple{F1},F2,T2<:NamedTuple{F2}}
+    _getproperty_kwexpr(key) = :($key = getproperty(dy, $(Meta.quot(key))))
+    quote
+        dnt1 = Tangent{T1}(; $(map(_getproperty_kwexpr, setdiff(F1, F2))...))
+        dnt2 = Tangent{T2}(; $(map(_getproperty_kwexpr, F2)...))
+        return (NoTangent(), dnt1, dnt2)
+    end
+end
+
+function rrule(::typeof(merge), nt1::T1, nt2::T2) where {T1<:NamedTuple,T2<:NamedTuple}
+    y = merge(nt1, nt2)
+    return y, MergePullback{T1,T2}()
 end

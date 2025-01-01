@@ -34,6 +34,7 @@
 @non_differentiable circshift!(::AbstractArray{Bool}, ::Any)
 @non_differentiable conj(::AbstractArray{Bool})
 @non_differentiable conj!(::AbstractArray{Bool})
+@non_differentiable cumprod(::AbstractVector{Bool})
 @non_differentiable cumprod(::AbstractArray{Bool})
 @non_differentiable cumprod!(::Any, ::AbstractArray{Bool})
 @non_differentiable cumsum(::AbstractArray{Bool})
@@ -86,6 +87,7 @@
 
 @non_differentiable Array(::AbstractArray{Bool})
 @non_differentiable BitArray(::Any...)
+@non_differentiable BitVector(::Any...)
 @non_differentiable IndexStyle(::AbstractArray{Bool})
 
 #####
@@ -190,6 +192,8 @@
 @non_differentiable floatmin(::Any)
 @non_differentiable flush(::Any)
 @non_differentiable foreach(::Any, ::Tuple{})
+
+@non_differentiable hasmethod(args...)
 
 @non_differentiable gensym(::Symbol)
 @non_differentiable gensym(::String...)
@@ -444,6 +448,7 @@ end
 @non_differentiable unique(::AbstractArray{Symbol})
 @non_differentiable unmark(::IO)
 @non_differentiable unsafe_string(::Cstring)
+@non_differentiable unsafe_trunc(::Any...)
 @non_differentiable uppercase(::AbstractString)
 @non_differentiable uppercase(::AbstractChar)
 @non_differentiable uppercasefirst(::AbstractString)
